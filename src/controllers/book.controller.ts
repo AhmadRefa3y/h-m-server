@@ -1,4 +1,3 @@
-import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { db } from "../utils/prisma";
 
@@ -14,7 +13,7 @@ export const getAllProduct = async (req: Request, res: Response) => {
 };
 
 // getBookById
-export const getProductById = async (req, res) => {
+export const getProductById = async (req: Request, res: Response) => {
     try {
         const bookId = req.params.id;
         const book = await db.product.findUnique({
