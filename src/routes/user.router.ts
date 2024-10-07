@@ -1,19 +1,18 @@
 import { Router } from "express";
 
 import {
-  getAllAuthors,
-  getAuthorById,
-  createAuthor,
-  updateAuthor,
-  deleteAuthor,
-} from "../controllers/author.controller";
+    getAllUsers,
+    getUserById,
+    Login,
+    register,
+} from "../controllers/user.controller";
+import verfiyToken from "../middlewares/verifyToken";
 
-const authorRouter = Router();
+const userRouter = Router();
 
-authorRouter.get("/", getAllAuthors);
-authorRouter.get("/:id", getAuthorById);
-authorRouter.post("/", createAuthor);
-authorRouter.put("/:id", updateAuthor);
-authorRouter.delete("/:id", deleteAuthor);
+userRouter.get("/", verfiyToken, getAllUsers);
+userRouter.get("/:id", verfiyToken, getUserById);
+userRouter.post("/register", register);
+userRouter.post("/login", Login);
 
-export default authorRouter;
+export default userRouter;
