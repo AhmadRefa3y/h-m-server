@@ -4,7 +4,12 @@ import { db } from "../utils/prisma";
 // getAllProduct
 export const getAllProduct = async (req: Request, res: Response) => {
     try {
-        const allProduct = await db.product.findMany();
+        const allProduct = await db.product.findMany({
+            include: {
+                Sizes: true,
+                colors: true,
+            },
+        });
 
         res.status(200).json({ data: allProduct });
     } catch (e) {
@@ -22,6 +27,7 @@ export const getProductById = async (req: Request, res: Response) => {
             },
             include: {
                 Sizes: true,
+                colors: true,
             },
         });
         res.status(200).json({ data: book });

@@ -34,21 +34,19 @@ model Product {
 }
 
 model Color {
-  id        String   @id @unique @default(cuid())
-  label     String
-  image     String
-  Product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
-  productId String?
+  id      String    @id @unique @default(cuid())
+  label   String
+  image   String
+  Product Product[]
 
   @@map("colors")
 }
 
 model Size {
-  id        String   @id @unique @default(cuid())
-  label     String
-  value     String   @unique
-  Product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
-  productId String?
+  id      String    @id @unique @default(cuid())
+  label   String
+  value   String    @unique
+  Product Product[]
 
   @@map("sizes")
 }

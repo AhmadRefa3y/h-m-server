@@ -18,10 +18,12 @@ const seed = async () => {
         const existingSizes = await db.size.findMany({
             where: {
                 value: {
-                    in: product.sizes.map((size) => size.value), //
+                    in: product.sizes.map((size) => size.value),
                 },
             },
         });
+
+        console.log(product.sizes);
 
         const existingSizeMap = existingSizes.reduce((acc, size) => {
             acc[size.value] = size;
@@ -39,6 +41,12 @@ const seed = async () => {
             }
         });
 
+        console.log(
+            "sizesToConnect",
+            sizesToConnect,
+            "sizesToCreate",
+            sizesToCreate
+        );
         await db.product.create({
             data: {
                 title: product.title,
@@ -46,9 +54,7 @@ const seed = async () => {
                 description: product.description,
                 price: Number(product.price),
                 colors: {
-                    createMany: {
-                        data: product.colors,
-                    },
+                    create: product.colors,
                 },
                 Sizes: {
                     connect: sizesToConnect.map((size) => ({ id: size.id })),
