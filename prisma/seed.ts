@@ -44,7 +44,7 @@ const seed = async () => {
                 title: product.title,
                 category: product.category,
                 description: product.description,
-                price: product.price,
+                price: Number(product.price),
                 colors: {
                     createMany: {
                         data: product.colors,
@@ -57,6 +57,7 @@ const seed = async () => {
                 images: product.images,
             },
         });
+        console.log("done", product.title);
     }
 };
 
