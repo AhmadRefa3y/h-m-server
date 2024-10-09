@@ -7,8 +7,8 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 model User {
@@ -20,16 +20,35 @@ model User {
 
 model Product {
   id          String   @id @unique @default(cuid())
-  name        String
-  price       Int
-  category    String
-  gender      String
-  imageUrl    String
+  title       String
+  price       String
+  images      String[]
+  colors      Color[]
+  Sizes       Size[]
   description String
-  size        String
-  color       String
+  category    String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@map("products")
+}
+
+model Color {
+  id        String   @id @unique @default(cuid())
+  label     String
+  image     String
+  Product   Product? @relation(fields: [productId], references: [id])
+  productId String?
+
+  @@map("colors")
+}
+
+model Size {
+  id        String   @id @unique @default(cuid())
+  label     String
+  value     String
+  Product   Product? @relation(fields: [productId], references: [id])
+  productId String?
+
+  @@map("sizes")
 }
