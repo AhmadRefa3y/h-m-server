@@ -12,9 +12,16 @@ export type Product = {
 };
 
 const products = JSON.parse(readFileSync("allData.json", "utf-8"));
+const removedDuplicates = products.filter(
+    (value, index, self) =>
+        index === self.findIndex((t) => t.images[1] === value.images[1])
+);
 
 const seed = async () => {
-    for (const product of products) {
+    await db.product.deleteMany({});
+    await db.size.deleteMany({});
+    await db.color.deleteMany({});
+    for (const product of removedDuplicates) {
         const existingSizes = await db.size.findMany({
             where: {
                 value: {

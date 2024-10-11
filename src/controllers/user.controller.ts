@@ -12,9 +12,12 @@ export const getAllUsers = async (req: Request, res: Response) => {
     }
 };
 
-export const getUserById = async (req: Request, res: Response) => {
+export const getUser = async (req: Request, res: Response) => {
     try {
-        const userId = req.params.id;
+        const userId = (req as any).user.id;
+        if (!userId) {
+            return res.status(404).json({ message: "User not found" });
+        }
         const user = await db.user.findUnique({
             where: {
                 id: userId,
@@ -27,6 +30,7 @@ export const getUserById = async (req: Request, res: Response) => {
         res.status(200).json({ data: user });
     } catch (e) {
         console.log(e);
+        return res.status(500).json({ message: "Somthing went wrong" });
     }
 };
 
@@ -59,13 +63,11 @@ export const register = async (req: Request, res: Response) => {
             { id: user.id, email: user.email },
             process.env.JWT_SECRET as string,
             {
-                expiresIn: "1d",
+                expiresIn: "10d",
             }
         );
-        console.log(token);
-        res.status(201).json({ data: user });
+        res.status(201).json({ data: user, token });
     } catch (e) {
-        console.log(e);
         res.status(500).json({ message: "Something went wrong" });
     }
 };
@@ -81,7 +83,6 @@ export const Login = async (req: Request, res: Response) => {
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-        console.log(user);
         const isPasswordValid = await bcrypt.compare(
             req.body.password,
             user.password
@@ -98,9 +99,9 @@ export const Login = async (req: Request, res: Response) => {
                 expiresIn: "1d",
             }
         );
-        res.setHeader("Authorization", `Bearer ${token}`);
         res.status(200).json({ data: user, token });
     } catch (e) {
         console.log(e);
+        return res.status(500).json({ message: "Somthing went wrong" });
     }
 };
