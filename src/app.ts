@@ -10,7 +10,7 @@ app.use(express.json());
 
 app.use("/api/products", productRouter);
 
-app.use("/api/users", userRouter);
+app.use("/api/user", userRouter);
 app.use("*", (req, res) => {
     res.status(404).json({ message: "Not found" });
 });

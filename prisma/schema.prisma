@@ -12,41 +12,93 @@ datasource db {
 }
 
 model User {
-  id       String @id @unique @default(cuid())
+  id       String    @id @unique @default(cuid())
   name     String
-  email    String @unique
+  email    String    @unique
   password String
+  Cart     Cart?
+  Wishlist Wishlist?
 }
 
 model Product {
-  id          String   @id @unique @default(cuid())
-  title       String
-  price       Int
-  images      String[]
-  colors      Color[]
-  Sizes       Size[]
-  description String
-  category    String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String         @id @unique @default(cuid())
+  title        String
+  price        Int
+  images       String[]
+  colors       Color[]
+  Sizes        Size[]
+  description  String
+  category     String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  CartItem     CartItem[]
+  WishlistItem WishlistItem[]
 
   @@map("products")
 }
 
 model Color {
-  id      String    @id @unique @default(cuid())
-  label   String
-  image   String
-  Product Product[]
+  id       String     @id @unique @default(cuid())
+  label    String
+  image    String
+  Product  Product[]
+  CartItem CartItem[]
 
   @@map("colors")
 }
 
 model Size {
-  id      String    @id @unique @default(cuid())
-  label   String
-  value   String    @unique
-  Product Product[]
+  id       String     @id @unique @default(cuid())
+  label    String
+  value    String     @unique
+  Product  Product[]
+  CartItem CartItem[]
 
   @@map("sizes")
+}
+
+model Cart {
+  id     String     @id @unique @default(cuid())
+  user   User       @relation(fields: [userId], references: [id])
+  userId String     @unique
+  items  CartItem[]
+
+  @@map("carts")
+}
+
+model CartItem {
+  id        String  @id @unique @default(cuid())
+  cart      Cart    @relation(fields: [cartId], references: [id])
+  cartId    String
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int     @default(1)
+  colorId   String?
+  sizeId    String?
+
+  color Color? @relation(fields: [colorId], references: [id])
+  size  Size?  @relation(fields: [sizeId], references: [id])
+
+  @@unique([cartId, productId, colorId, sizeId])
+  @@map("cart_items")
+}
+
+model Wishlist {
+  id     String         @id @unique @default(cuid())
+  user   User           @relation(fields: [userId], references: [id])
+  userId String         @unique
+  items  WishlistItem[]
+
+  @@map("wishlists")
+}
+
+model WishlistItem {
+  id         String   @id @unique @default(cuid())
+  wishlist   Wishlist @relation(fields: [wishlistId], references: [id])
+  wishlistId String
+  product    Product  @relation(fields: [productId], references: [id])
+  productId  String
+
+  @@unique([wishlistId, productId])
+  @@map("wishlist_items")
 }
