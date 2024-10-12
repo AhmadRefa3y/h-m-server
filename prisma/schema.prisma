@@ -25,6 +25,8 @@ model Product {
   title        String
   price        Int
   images       String[]
+  color        String?
+  size         String?
   colors       Color[]
   Sizes        Size[]
   description  String
