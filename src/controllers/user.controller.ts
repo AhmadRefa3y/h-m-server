@@ -2,6 +2,7 @@ import { db } from "../utils/prisma";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import { loginSchema, registerSchema } from "../utils/types/userTypes";
 export const getAllUsers = async (req: Request, res: Response) => {
     try {
         const allAuthors = await db.user.findMany({});
@@ -36,11 +37,15 @@ export const getUser = async (req: Request, res: Response) => {
 
 export const register = async (req: Request, res: Response) => {
     try {
-        const { name, email, password } = req.body;
+        const result = registerSchema.safeParse(req.body);
 
-        if (!name || !email || !password) {
-            return res.status(400).json({ message: "All fields are required" });
+        if (!result.success) {
+            return res.status(400).json({
+                message: "Validation failed",
+                errors: result.error.format(),
+            });
         }
+        const { name, email, password } = result.data;
 
         const isUserExist = await db.user.findUnique({
             where: {
@@ -74,25 +79,32 @@ export const register = async (req: Request, res: Response) => {
         );
         res.status(201).json({ data: user, token });
     } catch (e) {
+        console.log(e);
         res.status(500).json({ message: "Something went wrong" });
     }
 };
 
 export const Login = async (req: Request, res: Response) => {
     try {
+        const result = loginSchema.safeParse(req.body);
+
+        if (!result.success) {
+            return res.status(400).json({
+                message: "Validation failed",
+                errors: result.error.format(),
+            });
+        }
+        const { email, password } = result.data;
         const user = await db.user.findUnique({
             where: {
-                email: req.body.email,
+                email: email,
             },
         });
 
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-        const isPasswordValid = await bcrypt.compare(
-            req.body.password,
-            user.password
-        );
+        const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if (!isPasswordValid) {
             return res.status(400).json({ message: "Invalid password" });
@@ -102,7 +114,7 @@ export const Login = async (req: Request, res: Response) => {
             { id: user.id, email: user.email },
             process.env.JWT_SECRET as string,
             {
-                expiresIn: "1d",
+                expiresIn: "10d",
             }
         );
         res.status(200).json({
