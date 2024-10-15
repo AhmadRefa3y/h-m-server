@@ -95,27 +95,27 @@ export const Login = async (req: Request, res: Response) => {
             return res.status(400).json({ message: "Invalid password" });
         }
 
-        const refreshToken = jwt.sign(
-            { id: user.id, email: user.email },
-            process.env.REFRESH_TOKEN_SECRET as string,
-            {
-                expiresIn: "7d",
-            }
-        );
+        // const refreshToken = jwt.sign(
+        //     { id: user.id, email: user.email },
+        //     process.env.REFRESH_TOKEN_SECRET as string,
+        //     {
+        //         expiresIn: "7d",
+        //     }
+        // );
 
-        await db.user.update({
-            where: {
-                id: user.id,
-            },
-            data: {
-                refreshToken: refreshToken,
-            },
-        });
+        // await db.user.update({
+        //     where: {
+        //         id: user.id,
+        //     },
+        //     data: {
+        //         refreshToken: refreshToken,
+        //     },
+        // });
 
-        res.cookie("jwt", refreshToken, {
-            httpOnly: true,
-            maxAge: 7 * 24 * 60 * 60 * 1000,
-        });
+        // res.cookie("jwt", refreshToken, {ss
+        //     httpOnly: true,
+        //     maxAge: 7 * 24 * 60 * 60 * 1000,
+        // });
         const token = jwt.sign(
             { id: user.id, email: user.email },
             process.env.JWT_SECRET as string,
