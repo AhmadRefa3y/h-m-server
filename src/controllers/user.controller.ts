@@ -3,15 +3,6 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { loginSchema, registerSchema } from "../utils/types/userTypes";
-export const getAllUsers = async (req: Request, res: Response) => {
-    try {
-        const allAuthors = await db.user.findMany({});
-        res.status(200).json({ data: allAuthors });
-    } catch (e) {
-        console.log(e);
-        res.status(500).json({ message: "Something went wrong" });
-    }
-};
 
 export const getUser = async (req: Request, res: Response) => {
     try {
@@ -57,6 +48,7 @@ export const register = async (req: Request, res: Response) => {
             return res.status(400).json({ message: "User already exist" });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
+
         const user = await db.user.create({
             data: {
                 email,
@@ -70,14 +62,7 @@ export const register = async (req: Request, res: Response) => {
             },
         });
 
-        const token = jwt.sign(
-            { id: user.id, email: user.email },
-            process.env.JWT_SECRET as string,
-            {
-                expiresIn: "10d",
-            }
-        );
-        res.status(201).json({ data: user, token });
+        res.status(201).json({ data: user });
     } catch (e) {
         console.log(e);
         res.status(500).json({ message: "Something went wrong" });
@@ -110,6 +95,27 @@ export const Login = async (req: Request, res: Response) => {
             return res.status(400).json({ message: "Invalid password" });
         }
 
+        const refreshToken = jwt.sign(
+            { id: user.id, email: user.email },
+            process.env.REFRESH_TOKEN_SECRET as string,
+            {
+                expiresIn: "7d",
+            }
+        );
+
+        await db.user.update({
+            where: {
+                id: user.id,
+            },
+            data: {
+                refreshToken: refreshToken,
+            },
+        });
+
+        res.cookie("jwt", refreshToken, {
+            httpOnly: true,
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
         const token = jwt.sign(
             { id: user.id, email: user.email },
             process.env.JWT_SECRET as string,

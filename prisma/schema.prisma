@@ -12,12 +12,13 @@ datasource db {
 }
 
 model User {
-  id       String    @id @unique @default(cuid())
-  name     String
-  email    String    @unique
-  password String
-  Cart     Cart?
-  Wishlist Wishlist?
+  id           String    @id @unique @default(cuid())
+  name         String
+  email        String    @unique
+  password     String
+  refreshToken String?
+  Cart         Cart?
+  Wishlist     Wishlist?
 }
 
 model Product {

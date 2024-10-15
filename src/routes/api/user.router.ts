@@ -8,8 +8,8 @@ import {
     register,
     updateCart,
     updateWishList,
-} from "../controllers/user.controller";
-import verfiyToken from "../middlewares/verifyToken";
+} from "../../controllers/user.controller";
+import verfiyToken from "../../middlewares/verifyToken";
 
 const userRouter = Router();
 
