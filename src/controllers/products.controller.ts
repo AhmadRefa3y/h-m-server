@@ -4,7 +4,7 @@ import { db } from "../utils/prisma";
 // getAllProduct
 export const getAllProduct = async (req: Request, res: Response) => {
     try {
-        const { name, category, price, color, size } = req.query;
+        const { name, category, price, color, size, count } = req.query;
         console.log(
             "name",
             name,
@@ -41,6 +41,7 @@ export const getAllProduct = async (req: Request, res: Response) => {
                     equals: size as string,
                 },
             },
+            take: Number(count),
         });
 
         res.status(200).json({ data: allProduct });
@@ -49,20 +50,20 @@ export const getAllProduct = async (req: Request, res: Response) => {
     }
 };
 
-// getBookById
+// getProductById
 export const getProductById = async (req: Request, res: Response) => {
     try {
-        const bookId = req.params.id;
-        const book = await db.product.findUnique({
+        const ProductId = req.params.id;
+        const Product = await db.product.findUnique({
             where: {
-                id: bookId,
+                id: ProductId,
             },
             include: {
                 Sizes: true,
                 colors: true,
             },
         });
-        res.status(200).json({ data: book });
+        res.status(200).json({ data: Product });
     } catch (e) {
         console.log(e);
     }
