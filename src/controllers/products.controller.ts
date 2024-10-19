@@ -41,7 +41,7 @@ export const getAllProduct = async (req: Request, res: Response) => {
                     equals: size as string,
                 },
             },
-            take: Number(count),
+            take: Number(count) || undefined,
         });
 
         res.status(200).json({ data: allProduct });
