@@ -29,13 +29,13 @@ const refreshTokenHandler = async (req: Request, res: Response) => {
         const accessToken = jwt.sign(
             { id: user.id, email: user.email },
             process.env.JWT_SECRET as string,
-            { expiresIn: "10m" }
+            { expiresIn: "10s" }
         );
 
         const newRefreshToken = jwt.sign(
-            { id: user.id, email: user.email },
+            { id: user.id, email: user.email, username: user.name },
             process.env.REFRESH_TOKEN_SECRET as string,
-            { expiresIn: "7d" }
+            { expiresIn: "30d" }
         );
 
         await db.user.update({
@@ -58,6 +58,7 @@ const refreshTokenHandler = async (req: Request, res: Response) => {
             user: {
                 email: user.email,
                 id: user.id,
+                name: user.name,
             },
         });
     } catch (error) {

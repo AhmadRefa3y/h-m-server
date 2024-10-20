@@ -114,6 +114,8 @@ export const Login = async (req: Request, res: Response) => {
 
         res.cookie("jwt", refreshToken, {
             httpOnly: true,
+            sameSite: "none",
+            secure: true,
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
         const token = jwt.sign(
