@@ -1,7 +1,9 @@
 import { Router } from "express";
 
 import {
+    addOrder,
     getCart,
+    getOrders,
     getUser,
     getWishList,
     Login,
@@ -20,5 +22,7 @@ userRouter.get("/cart", verfiyToken, getCart);
 userRouter.put("/cart", verfiyToken, updateCart);
 userRouter.get("/whishlist", verfiyToken, getWishList);
 userRouter.put("/whishlist", verfiyToken, updateWishList);
+userRouter.get("/orders", verfiyToken, getOrders);
+userRouter.post("/add-order", verfiyToken, addOrder);
 
 export default userRouter;

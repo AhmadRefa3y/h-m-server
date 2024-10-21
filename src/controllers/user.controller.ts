@@ -120,7 +120,7 @@ export const Login = async (req: Request, res: Response) => {
             { id: user.id, email: user.email },
             process.env.JWT_SECRET as string,
             {
-                expiresIn: "10d",
+                expiresIn: "30d",
             }
         );
         res.status(200).json({
@@ -257,6 +257,52 @@ export const updateWishList = async (req: Request, res: Response) => {
             });
             res.status(200).json({ data: newWishList });
         }
+    } catch (e) {
+        console.log(e);
+        return res.status(500).json({ message: "Somthing went wrong" });
+    }
+};
+export const getOrders = async (req: Request, res: Response) => {
+    try {
+        const userId = (req as any).user.id;
+        const orders = await db.order.findMany({
+            where: {
+                userId: userId,
+            },
+            include: {
+                items: true,
+            },
+        });
+
+        if (!orders) {
+            return res.status(404).json({ message: "orders not found" });
+        }
+        res.status(200).json({ data: orders });
+    } catch (e) {
+        console.log(e);
+        return res.status(500).json({ message: "Somthing went wrong" });
+    }
+};
+
+export const addOrder = async (req: Request, res: Response) => {
+    try {
+        const userId = (req as any).user.id;
+        const order = req.body.order;
+        console.log(order);
+
+        const newOrder = await db.order.create({
+            data: {
+                userId: userId,
+                items: {
+                    create: order.items,
+                },
+                amount: order.amount,
+            },
+            include: {
+                items: true,
+            },
+        });
+        res.status(200).json({ data: newOrder });
     } catch (e) {
         console.log(e);
         return res.status(500).json({ message: "Somthing went wrong" });

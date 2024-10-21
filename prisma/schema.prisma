@@ -19,6 +19,7 @@ model User {
   refreshToken String?
   Cart         Cart?
   Wishlist     Wishlist?
+  order        order[]
 }
 
 model Product {
@@ -36,6 +37,7 @@ model Product {
   updatedAt    DateTime       @updatedAt
   CartItem     CartItem[]
   WishlistItem WishlistItem[]
+  orderItem    orderItem[]
 
   @@map("products")
 }
@@ -79,8 +81,9 @@ model CartItem {
   colorId   String?
   sizeId    String?
 
-  color Color? @relation(fields: [colorId], references: [id])
-  size  Size?  @relation(fields: [sizeId], references: [id])
+  color   Color?  @relation(fields: [colorId], references: [id])
+  size    Size?   @relation(fields: [sizeId], references: [id])
+  orderId String?
 
   @@unique([cartId, productId, colorId, sizeId])
   @@map("cart_items")
@@ -104,4 +107,23 @@ model WishlistItem {
 
   @@unique([wishlistId, productId])
   @@map("wishlist_items")
+}
+
+model order {
+  id     String      @id @unique @default(cuid())
+  user   User        @relation(fields: [userId], references: [id])
+  userId String
+  items  orderItem[]
+  amount Int
+
+  @@map("orders")
+}
+
+model orderItem {
+  id        String  @id @unique @default(cuid())
+  order     order   @relation(fields: [orderId], references: [id])
+  orderId   String
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int     @default(1)
 }
