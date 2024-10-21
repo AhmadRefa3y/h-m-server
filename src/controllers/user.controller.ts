@@ -270,7 +270,11 @@ export const getOrders = async (req: Request, res: Response) => {
                 userId: userId,
             },
             include: {
-                items: true,
+                items: {
+                    include: {
+                        product: true,
+                    },
+                },
             },
         });
 
