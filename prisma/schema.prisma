@@ -110,20 +110,24 @@ model WishlistItem {
 }
 
 model order {
-  id     String      @id @unique @default(cuid())
-  user   User        @relation(fields: [userId], references: [id])
-  userId String
-  items  orderItem[]
-  amount Int
+  id        String      @id @unique @default(cuid())
+  user      User        @relation(fields: [userId], references: [id])
+  userId    String
+  items     orderItem[]
+  amount    Int
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @default(now()) @updatedAt
 
   @@map("orders")
 }
 
 model orderItem {
-  id        String  @id @unique @default(cuid())
-  order     order   @relation(fields: [orderId], references: [id])
+  id        String   @id @unique @default(cuid())
+  order     order    @relation(fields: [orderId], references: [id])
   orderId   String
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
   productId String
-  quantity  Int     @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  quantity  Int      @default(1)
 }
